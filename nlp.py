@@ -23,7 +23,7 @@ import os
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
-
+# dowmload and update
 from google.colab import drive
 drive.mount('/content/drive')
 
