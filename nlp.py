@@ -11,7 +11,7 @@ import nltk
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
+# import seaborn as sns
 import time
 import re
 from wordcloud import WordCloud
@@ -24,8 +24,8 @@ nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 # dowmload and update
-from google.colab import drive
-drive.mount('/content/drive')
+# from google.colab import drive
+# drive.mount('/content/drive')
 
 def getTextFromFiles(df, data_path, depression, limit):
   """Return Data Frame """
