@@ -132,6 +132,3 @@ example_counts = count_vectorizer.transform(examples)
 example_tfidf = tfidf_vectorizer.transform(example_counts)
 predictions_tfidf = classifier.predict(example_tfidf)
 print(predictions_tfidf)
-
-
-# working !!!!!!!!!!!!!!!!!!!!!!!!!!!!
