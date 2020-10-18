@@ -77,9 +77,9 @@ checkfilesCounts(data_path_nd)
 #
 # # 데이터 전처리
 df = pd.DataFrame(columns=['text', 'depression'])
-df = getTextFromFiles(df, data_path_d, 1, 50)
+df = getTextFromFiles(df, data_path_d, 1, 3)
 # # 이시점까진 우울증 글만 추가
-df = getTextFromFiles(df, data_path_nd, 0, 50)
+df = getTextFromFiles(df, data_path_nd, 0, 3)
 dataPreprocessingForX(df, 'text')
 # # print(df) 이 시점까지 우울증 + 우울증 아님 글 추가
 # # 모두 소문자로변화
@@ -115,6 +115,18 @@ count_vectorizer = CountVectorizer(ngram_range=(1,1))
 # fit : it() 메소드를 호출해서 학습 데이터 세트에 등장하는 어휘를 가르쳐놓아야 한다.
 #  .transform()는 문자열 목록을 가져와 미리 학습해놓은 사전을 기반으로 어휘의 빈도를 세주는 거다.
 counts = count_vectorizer.fit_transform(df['text'].values)
+print(count_vectorizer.get_feature_names())
+
+# print(counts.toarray())
+tmp1 = counts.toarray()
+print(tmp1.sum(axis=0))
+
+scva = count_vectorizer.get_feature_names()
+scvb = tmp1.sum(axis=0)
+
+np.savetxt("csv1.csv",scva,delimiter=",", fmt="%s")
+np.savetxt("csv2.csv",scvb,delimiter=",")
+# tmp2 = np.
 
 # print(np.array(counts))
 dump1 =np.array(counts)
@@ -128,8 +140,7 @@ print(type(dump1))
 
 # dump1 = count_vectorizer.get_feature_names()
 dump2 = counts.toarray()
-np.savetxt("foo1.csv",dump1,delimiter=",")
-# np.savetxt("foo2.csv",dump2,delimiter=",")
+
 # print(counts)
 classifier = MultinomialNB()
 targets = df['depression'].values
