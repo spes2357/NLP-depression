@@ -27,6 +27,19 @@ nltk.download('wordnet')
 # from google.colab import drive
 # drive.mount('/content/drive')
 
+def getTextFromFiles2(dfa, data_path):
+  """Return Data Frame """
+
+  for file in os.listdir(data_path):
+    with open(data_path + "/" + file, 'r', encoding="ISO-8859-1") as file1:
+      file1 = file1.read()
+      # print(file1)
+      dfa = dfa.append({'test2': file1}, ignore_index=True)
+
+  return dfa
+
+
+
 def getTextFromFiles(df, data_path, depression, limit):
   """Return Data Frame """
 
@@ -42,38 +55,38 @@ def checkfilesCounts(data_path):
 
   print(len(os.listdir(data_path)))
 
-data_path_d = "/content/drive/My Drive/NLP Team/code/reddit_depression"
-data_path_nd = "/content/drive/My Drive/NLP Team/code/reddit_non_depression"
+# data_path_d = "/content/drive/My Drive/NLP Team/code/reddit_depression"
+# data_path_nd = "/content/drive/My Drive/NLP Team/code/reddit_non_depression"
+
+data_path_d = "reddit_depression"
+data_path_nd = "reddit_non_depression"
 
 checkfilesCounts(data_path_d)
 checkfilesCounts(data_path_nd)
 
+
+def dataPreprocessingForX(df, columnName1):
+  df[columnName1] = df[columnName1].map(lambda text: text.lower())
+  df[columnName1] = df[columnName1].map(lambda text: nltk.tokenize.word_tokenize(text))
+  stop_words = set(nltk.corpus.stopwords.words('english'))
+  df[columnName1] = df[columnName1].map(lambda tokens: [w for w in tokens if not w in stop_words])
+  df[columnName1] = df[columnName1].map(lambda text: ' '.join(text))
+  df[columnName1] = df[columnName1].map(lambda text: re.sub('[^A-Za-z0-9]+', ' ', text))
+  wnl = nltk.WordNetLemmatizer()
+  df[columnName1] = df[columnName1].map(lambda text: wnl.lemmatize(text))
+
+
+
 df = pd.DataFrame(columns = ['text','depression'])
 df = getTextFromFiles(df, data_path_d, 1, 50)
 df = getTextFromFiles(df, data_path_nd, 0, 50)
-df['text'] = df['text'].map(lambda text:  nltk.tokenize.word_tokenize(text))
-stop_words = set(nltk.corpus.stopwords.words('english'))
-df['text'] = df['text'].map(lambda tokens: [w for w in tokens if not w in stop_words])
-df['text'] = df['text'].map(lambda text: ' '.join(text))
-df['text'] = df['text'].map(lambda text: re.sub('[^a-z0-9]+', ' ', text))
-wnl = nltk.WordNetLemmatizer()
-df['text'] = df['text'].map(lambda text: wnl.lemmatize(text))
+dataPreprocessingForX(df, 'text')
+
 df['depression'] = df['depression'].astype('int32')
 
 # print(df['depression'])
 
 print(df.groupby('depression').count())
-
-#Wordcloud
-def makeWorldCloud():
-  depression_words = ''.join(list(df['text']))
-  depression_wordclod = WordCloud(width = 512,height = 512).generate(depression_words)
-  plt.figure(figsize = (10, 8), facecolor = 'k')
-  plt.imshow(depression_wordclod)
-  plt.axis('off')
-  plt.tight_layout(pad = 0)
-  plt.show()
-makeWorldCloud()
 
 count_vectorizer = CountVectorizer()
 counts = count_vectorizer.fit_transform(df['text'].values)
@@ -83,6 +96,8 @@ targets = df['depression'].values
 classifier.fit(counts, targets)
 
 examples = ['let me die', "fucking shit kill me", "I love you", "I am happy","Sang Eon is gay"]
+
+
 example_counts = count_vectorizer.transform(examples)
 predictions = classifier.predict(example_counts)
 
@@ -127,6 +142,9 @@ A lack
 Of tact
 """
 ]
+
+
+
 # lstm = recommandation.
 example_counts = count_vectorizer.transform(examples)
 example_tfidf = tfidf_vectorizer.transform(example_counts)
