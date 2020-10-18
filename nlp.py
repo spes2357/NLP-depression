@@ -77,9 +77,9 @@ checkfilesCounts(data_path_nd)
 #
 # # 데이터 전처리
 df = pd.DataFrame(columns=['text', 'depression'])
-df = getTextFromFiles(df, data_path_d, 1, 3)
+df = getTextFromFiles(df, data_path_d, 1, 100)
 # # 이시점까진 우울증 글만 추가
-df = getTextFromFiles(df, data_path_nd, 0, 3)
+df = getTextFromFiles(df, data_path_nd, 0, 100)
 dataPreprocessingForX(df, 'text')
 # # print(df) 이 시점까지 우울증 + 우울증 아님 글 추가
 # # 모두 소문자로변화
@@ -108,7 +108,6 @@ df['depression'] = df['depression'].astype('int32')
 #
 # print('what is this : ',df.groupby('depression').count())
 
-
 # Countvectorizer : scikit-learn에서 Naive Bayes 분류기를 사용하기 전에 일단 자연어(텍스트)로 이루어진 문서들을 1과 0 밖에 모르는 컴퓨터가 이해할 수 있는 형식으로 변환해야 할 거다. feature extraction, 어휘(특성) 추출 과정이라 볼 수 있다.
 count_vectorizer = CountVectorizer(ngram_range=(1,1))
 #  fit_transform : fit과 transform을 합쳐놓은 문법
@@ -124,11 +123,12 @@ print(tmp1.sum(axis=0))
 scva = count_vectorizer.get_feature_names()
 scvb = tmp1.sum(axis=0)
 
-np.savetxt("csv1.csv",scva,delimiter=",", fmt="%s")
-np.savetxt("csv2.csv",scvb,delimiter=",")
+np.savetxt("csv21.csv",scva,delimiter=",", fmt="%s")
+np.savetxt("csv22.csv",scvb,delimiter=",")
 # tmp2 = np.
 
 # print(np.array(counts))
+
 dump1 =np.array(counts)
 df_dump1 = pd.DataFrame(columns=['text', "count"])
 temp = dict()
@@ -139,16 +139,18 @@ print(type(dump1))
 
 
 # dump1 = count_vectorizer.get_feature_names()
+
 dump2 = counts.toarray()
 
 # print(counts)
+
 classifier = MultinomialNB()
 targets = df['depression'].values
 classifier.fit(counts, targets)
 
 
 df_test = pd.DataFrame(columns=['text'])
-df_test = getTextFromFiles_Test(df_test, data_path_d_test,10)
+df_test = getTextFromFiles_Test(df_test, data_path_d_test,40)
 dataPreprocessingForX(df_test, 'text')
 print(type(df_test))
 example_counts = count_vectorizer.transform(df_test['text'].tolist())
@@ -181,3 +183,16 @@ print(predictions_tfidf)
 #   plt.show()
 # makeWorldCloud()
 
+
+
+
+counts = count_vectorizer.fit_transform(df_test['text'].tolist())
+print(count_vectorizer.get_feature_names())
+# print(counts.toarray())
+tmp1 = counts.toarray()
+print(tmp1.sum(axis=0))
+scva = count_vectorizer.get_feature_names()
+scvb = tmp1.sum(axis=0)
+
+np.savetxt("csv23.csv",scva,delimiter=",", fmt="%s")
+np.savetxt("csv24.csv",scvb,delimiter=",")
