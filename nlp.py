@@ -51,6 +51,16 @@ def getTextFromFiles_Test(df_test, data_path, limit):
 
     return df_test
 
+def dataPreprocessingForX(df, columnName1):
+  df[columnName1] = df[columnName1].map(lambda text: text.lower())
+  df[columnName1] = df[columnName1].map(lambda text: nltk.tokenize.word_tokenize(text))
+  stop_words = set(nltk.corpus.stopwords.words('english'))
+  df[columnName1] = df[columnName1].map(lambda tokens: [w for w in tokens if not w in stop_words])
+  df[columnName1] = df[columnName1].map(lambda text: ' '.join(text))
+  df[columnName1] = df[columnName1].map(lambda text: re.sub('[^A-Za-z]+', ' ', text))
+  wnl = nltk.WordNetLemmatizer()
+  df[columnName1] = df[columnName1].map(lambda text: wnl.lemmatize(text))
+
 
 def checkfilesCounts(data_path):
     print(len(os.listdir(data_path)))
@@ -64,33 +74,34 @@ data_path_d_test = "reddit_depression_testset"
 
 checkfilesCounts(data_path_d)
 checkfilesCounts(data_path_nd)
-
-# 데이터 전처리
+#
+# # 데이터 전처리
 df = pd.DataFrame(columns=['text', 'depression'])
 df = getTextFromFiles(df, data_path_d, 1, 50)
-# 이시점까진 우울증 글만 추가
+# # 이시점까진 우울증 글만 추가
 df = getTextFromFiles(df, data_path_nd, 0, 50)
-# print(df) 이 시점까지 우울증 + 우울증 아님 글 추가
-# 모두 소문자로변화
-df['text'] = df['text'].map(lambda text: text.lower())
-# 단어 단위로 분리
-df['text'] = df['text'].map(lambda text: nltk.tokenize.word_tokenize(text))
-# stop word를 통해 불필요한 단어 제거
-stop_words = set(nltk.corpus.stopwords.words('english'))
-df['text'] = df['text'].map(lambda tokens: [w for w in tokens if not w in stop_words])
-# 단어를 문장으로 합침
-df['text'] = df['text'].map(lambda text: ' '.join(text))
-# 특수문자 제거
-df['text'] = df['text'].map(lambda text: re.sub('[^A-Za-z0-9]+', ' ', text))
-df['text'] = df['text'].map(lambda text: re.sub('[-=.#/?:$}]', ' ', text))
-
-wnl = nltk.WordNetLemmatizer()
-df['text'] = df['text'].map(lambda text: wnl.lemmatize(text))
-
-print(df['text'])
-
-# print('df[depression]',df['depression'])
+dataPreprocessingForX(df, 'text')
+# # print(df) 이 시점까지 우울증 + 우울증 아님 글 추가
+# # 모두 소문자로변화
+# df['text'] = df['text'].map(lambda text: text.lower())
+# # 단어 단위로 분리
+# df['text'] = df['text'].map(lambda text: nltk.tokenize.word_tokenize(text))
+# # stop word를 통해 불필요한 단어 제거
+# stop_words = set(nltk.corpus.stopwords.words('english'))
+# df['text'] = df['text'].map(lambda tokens: [w for w in tokens if not w in stop_words])
+# # 단어를 문장으로 합침
+# df['text'] = df['text'].map(lambda text: ' '.join(text))
+# # 특수문자 제거
+# df['text'] = df['text'].map(lambda text: re.sub('[^A-Za-z0-9]+', ' ', text))
+# df['text'] = df['text'].map(lambda text: re.sub('[-=.#/?:$}]', ' ', text))
 #
+# wnl = nltk.WordNetLemmatizer()
+# df['text'] = df['text'].map(lambda text: wnl.lemmatize(text))
+#
+# print(df['text'])
+#
+# # print('df[depression]',df['depression'])
+# #
 df['depression'] = df['depression'].astype('int32')
 #
 # print(df['depression'])
@@ -99,58 +110,54 @@ df['depression'] = df['depression'].astype('int32')
 
 
 # Countvectorizer : scikit-learn에서 Naive Bayes 분류기를 사용하기 전에 일단 자연어(텍스트)로 이루어진 문서들을 1과 0 밖에 모르는 컴퓨터가 이해할 수 있는 형식으로 변환해야 할 거다. feature extraction, 어휘(특성) 추출 과정이라 볼 수 있다.
-count_vectorizer = CountVectorizer()
+count_vectorizer = CountVectorizer(ngram_range=(1,1))
 #  fit_transform : fit과 transform을 합쳐놓은 문법
 # fit : it() 메소드를 호출해서 학습 데이터 세트에 등장하는 어휘를 가르쳐놓아야 한다.
 #  .transform()는 문자열 목록을 가져와 미리 학습해놓은 사전을 기반으로 어휘의 빈도를 세주는 거다.
 counts = count_vectorizer.fit_transform(df['text'].values)
 
-print(counts)
+# print(np.array(counts))
+dump1 =np.array(counts)
+df_dump1 = pd.DataFrame(columns=['text', "count"])
+temp = dict()
+# for i in dump1:
+
+print(type(dump1))
+
+
+
+# dump1 = count_vectorizer.get_feature_names()
+dump2 = counts.toarray()
+np.savetxt("foo1.csv",dump1,delimiter=",")
+# np.savetxt("foo2.csv",dump2,delimiter=",")
+# print(counts)
 classifier = MultinomialNB()
 targets = df['depression'].values
 classifier.fit(counts, targets)
 
-examples = ['let me die', "fucking shit kill me", "I love you", "I am happy", "Sang Eon is gay"]
 
-example_counts = count_vectorizer.transform(examples)
+df_test = pd.DataFrame(columns=['text'])
+df_test = getTextFromFiles_Test(df_test, data_path_d_test,10)
+dataPreprocessingForX(df_test, 'text')
+print(type(df_test))
+example_counts = count_vectorizer.transform(df_test['text'].tolist())
 predictions = classifier.predict(example_counts)
 
 print(predictions)
+
+
 
 tfidf_vectorizer = TfidfTransformer().fit(counts)
 tfidf = tfidf_vectorizer.transform(counts)
 classifier = MultinomialNB()
 targets = df['depression'].values
 classifier.fit(counts, targets)
-# examples = ['let me die', "fucking shit kill me", "I love you", "I am happy","Sang Eon is gay"]
-examples = pd.DataFrame(columns=['text'])
-examples = getTextFromFiles_Test(examples, data_path_d_test, 1)
-print('this is result : ', examples)
-examples = [
-    """
-  I (32F) feel like a dumb brat characterizing the situation as abuse. I can't help but think: probably this doesn't apply here and I'm just finding excuses for not putting up with my dad who is who he is.
-  After my undiagnosed BPD dad had a stroke 1.5 years ago, I took pity on him and decided to warm up towards him. Beforehand I was upset and disgusted by the constant and unassumed emotional demands. I didn't want to make efforts to care for him and work beyond my disgust to be kind to him. EDIT: I was always kind, but I mean that I didn't want to "be kind" in the sense of "actively helping him to feel good".
-  A little backstory: we were very close during my teenage years and I started removing myself from age 16. I've gone back and forth, took my distances, asked for him to get help, tried myself to help, removed myself from the relationship again, etc.
-  After he had a stroke I found myself thinking: he just wants a little bit of love, a little caring call from time to time, what is wrong about that? He is old and sick now. He cannot do harm. And surrendering to the tenderness I feel for him felt like a relief. I decided to let go, be kind, and listen.
-  It was okay for a while, on the phone, and I didn't see him very often during this time. But I visited him and my mother this weekend and things went wrong. After 24 hours I had some sort of a meltdown and felt extremely low. I almost fled on Sunday morning but I decided to stay and meet the rest of the family. I'm proud of myself for being able to build back up my wall towards him, once again, being polite and considerate to him nonetheless, staying until the end of the day, and being a strong adult.
-  Now I realize how, phone conversation after phone conversation, I fell back into his circle, providing satisfaction to his emotional needs. I thought this was going fine but it was not. I would like to have a relationship with him in which I can be authentically myself, but it seems like it's not working.
-  I'm feeling guilty. I'm also feeling like I can either be a victim, or be abusive myself, or be both. I believe he says things that disrupt my emotional safety, but I just accept what he says as his usual b\*llsh\*t, and don't connect to my own emotions. Maybe I try to monitor his emotions to understand what's going on, while denying my own. I can end up angry, and voicing this anger. I'm trying my best to keep being respectful and considerate but I sometimes end up feeling like the abusive one.
-  When I remove myself emotionally I feel safe, but also like a heartless and ungrateful kid. I have a hard time calling his manners an abuse. He's just being his usual self, surfing on his never ending narcissistic wave of extracting validation and comfort in other people at any cost. I can talk about it to my mother, but she also needs support, and I'm trying to provide some, but I don't think we can really help each other. My brother has quite a hard time in life which I think is partly related to the situation with my dad, but any hint I tried to give to open the discussion failed.
-  Sorry for the rant form that this post took. I guess I'm looking for a bit of understanding and support. It's my first post and English is a second language. I'm sorry for the mistakes you had to deal with while reading it.
-  \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
-  Kitty cat cat
-  Sometimes you
-  Display
-  A lack
-  Of tact
-  """
-]
-# lstm = recommandation.
 
-example_counts = count_vectorizer.transform(examples)
+
+example_counts = count_vectorizer.transform(df_test['text'].tolist())
 example_tfidf = tfidf_vectorizer.transform(example_counts)
 predictions_tfidf = classifier.predict(example_tfidf)
-# print(predictions_tfidf)
+print(predictions_tfidf)
 
 # Wordcloud
 # def makeWorldCloud():
