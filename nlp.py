@@ -30,6 +30,7 @@ nltk.download('wordnet')
 # from google.colab import drive
 # drive.mount('/content/drive')
 
+# trainging dataset 읽기
 def getTextFromFiles(df, data_path, depression, limit):
     """Return Data Frame """
 
@@ -40,7 +41,7 @@ def getTextFromFiles(df, data_path, depression, limit):
 
     return df
 
-
+# test dataset 읽기
 def getTextFromFiles_Test(df_test, data_path, limit):
     """Return Data Frame """
 
@@ -51,17 +52,23 @@ def getTextFromFiles_Test(df_test, data_path, limit):
 
     return df_test
 
+# 데이터 전처리 과정
 def dataPreprocessingForX(df, columnName1):
+  #   읽어들인 데이터를 모두 소문자화 시킨다
   df[columnName1] = df[columnName1].map(lambda text: text.lower())
+  # 단어 단위로 나눈다(word tokenzing)
   df[columnName1] = df[columnName1].map(lambda text: nltk.tokenize.word_tokenize(text))
+  # stoptwords를 이용하여 불필요한 단어 제거
   stop_words = set(nltk.corpus.stopwords.words('english'))
   df[columnName1] = df[columnName1].map(lambda tokens: [w for w in tokens if not w in stop_words])
+  # regular expression을 이용한 특수문자 제거
   df[columnName1] = df[columnName1].map(lambda text: ' '.join(text))
   df[columnName1] = df[columnName1].map(lambda text: re.sub('[^A-Za-z]+', ' ', text))
+  # word lemmatizer를 톨해 단어를 원문화 시킨다.
   wnl = nltk.WordNetLemmatizer()
   df[columnName1] = df[columnName1].map(lambda text: wnl.lemmatize(text))
 
-
+# 파일이 제대로 읽혔는지 확인하는 function
 def checkfilesCounts(data_path):
     print(len(os.listdir(data_path)))
 
@@ -81,32 +88,9 @@ df = getTextFromFiles(df, data_path_d, 1, 100)
 # # 이시점까진 우울증 글만 추가
 df = getTextFromFiles(df, data_path_nd, 0, 100)
 dataPreprocessingForX(df, 'text')
-# # print(df) 이 시점까지 우울증 + 우울증 아님 글 추가
-# # 모두 소문자로변화
-# df['text'] = df['text'].map(lambda text: text.lower())
-# # 단어 단위로 분리
-# df['text'] = df['text'].map(lambda text: nltk.tokenize.word_tokenize(text))
-# # stop word를 통해 불필요한 단어 제거
-# stop_words = set(nltk.corpus.stopwords.words('english'))
-# df['text'] = df['text'].map(lambda tokens: [w for w in tokens if not w in stop_words])
-# # 단어를 문장으로 합침
-# df['text'] = df['text'].map(lambda text: ' '.join(text))
-# # 특수문자 제거
-# df['text'] = df['text'].map(lambda text: re.sub('[^A-Za-z0-9]+', ' ', text))
-# df['text'] = df['text'].map(lambda text: re.sub('[-=.#/?:$}]', ' ', text))
-#
-# wnl = nltk.WordNetLemmatizer()
-# df['text'] = df['text'].map(lambda text: wnl.lemmatize(text))
-#
-# print(df['text'])
-#
-# # print('df[depression]',df['depression'])
-# #
+
 df['depression'] = df['depression'].astype('int32')
-#
-# print(df['depression'])
-#
-# print('what is this : ',df.groupby('depression').count())
+
 
 # Countvectorizer : scikit-learn에서 Naive Bayes 분류기를 사용하기 전에 일단 자연어(텍스트)로 이루어진 문서들을 1과 0 밖에 모르는 컴퓨터가 이해할 수 있는 형식으로 변환해야 할 거다. feature extraction, 어휘(특성) 추출 과정이라 볼 수 있다.
 count_vectorizer = CountVectorizer(ngram_range=(1,1))
