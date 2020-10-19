@@ -9,7 +9,8 @@ Original file is located at
 # non depression dataset은 training 시킬 필요가 없다. 어차피 depression dataset에 없는 단어가 곧 non-depression 환자의 데이터 셋이 될거 같다.
 # 추가로
 import nltk
-from nltk.stem import PorterStemmer
+from nltk.stem import PorterStemmer,WordNetLemmatizer
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -68,8 +69,9 @@ def dataPreprocessingForX(df, columnName1):
   # word stemmer를 톨해 단어를 원문화 시킨다.
   df[columnName1] = df[columnName1].map(lambda text: nltk.tokenize.word_tokenize(text))
   ps = PorterStemmer()
-  print(df[columnName1][0])
-  df[columnName1] = df[columnName1].map(lambda text: [ps.stem(i) for i in text])
+  lemmatizer = WordNetLemmatizer()
+  # print(df[columnName1][0])
+  df[columnName1] = df[columnName1].map(lambda text: [lemmatizer.lemmatize(i) for i in text])
   df[columnName1] = df[columnName1].map(lambda text: ' '.join(text))
 
 # 파일이 제대로 읽혔는지 확인하는 function
@@ -101,7 +103,7 @@ df['depression'] = df['depression'].astype('int32')
 # Countvectorizer : scikit-learn에서 Naive Bayes 분류기를 사용하기 전에 일단 자연어(텍스트)로 이루어진 문서들을 1과 0 밖에 모르는 컴퓨터가 이해할 수 있는 형식으로 변환해야 할 거다. feature extraction, 어휘(특성) 추출 과정이라 볼 수 있다.
 
 # test_dataset에서 각 원문의 단어가 몇 번 나왔는지 확인 및 추출
-count_vectorizer = CountVectorizer(ngram_range=(1,1), min_df=50)
+count_vectorizer = CountVectorizer(ngram_range=(1,3), min_df=50)
 #  fit_transform : fit과 transform을 합쳐놓은 문법
 # fit : it() 메소드를 호출해서 학습 데이터 세트에 등장하는 어휘를 가르쳐놓아야 한다.
 #  .transform()는 문자열 목록을 가져와 미리 학습해놓은 사전을 기반으로 어휘의 빈도를 세주는 거다.
@@ -136,10 +138,10 @@ dataPreprocessingForX(df_test, 'text')
 counts = count_vectorizer.fit_transform(df['text'].tolist())
 
 
-print(count_vectorizer.get_feature_names())
+# print(count_vectorizer.get_feature_names())
 # print(counts.toarray())
 tmp1 = counts.toarray()
-print(tmp1.sum(axis=0))
+# print(tmp1.sum(axis=0))
 scva = count_vectorizer.get_feature_names()
 scvb = tmp1.sum(axis=0)
 
@@ -156,7 +158,7 @@ classifier.fit(counts, targets)
 
 
 
-print(type(df_test))
+
 example_counts = count_vectorizer.transform(df_test['text'].tolist())
 predictions = classifier.predict(example_counts)
 
@@ -176,6 +178,15 @@ example_tfidf = tfidf_vectorizer.transform(example_counts)
 predictions_tfidf = classifier.predict(example_tfidf)
 print(predictions_tfidf)
 
+indexList = []
+for idx, i in enumerate(predictions_tfidf):
+    if i == 1:
+        indexList.append(idx)
+
+print(type(df_test.iloc[indexList]))
+
+
+df_test = df_test.iloc[indexList]
 
 
 
@@ -192,18 +203,14 @@ print(predictions_tfidf)
 
 
 
-
-
-
-
-# Wordcloud
-# def makeWorldCloud():
-#   depression_words = ''.join(list(df['text']))
-#   depression_wordclod = WordCloud(width = 512,height = 512).generate(depression_words)
-#   plt.figure(figsize = (10, 8), facecolor = 'k')
-#   plt.imshow(depression_wordclod)
-#   plt.axis('off')
-#   plt.tight_layout(pad = 0)
-#   plt.show()
-# makeWorldCloud()
+# # Wordcloud
+def makeWorldCloud():
+  depression_words = ''.join(list(df_test["text"].tolist()))
+  depression_wordclod = WordCloud(width = 512,height = 512).generate(depression_words)
+  plt.figure(figsize = (10, 8), facecolor = 'k')
+  plt.imshow(depression_wordclod)
+  plt.axis('off')
+  plt.tight_layout(pad = 0)
+  plt.show()
+makeWorldCloud()
 
