@@ -192,17 +192,6 @@ df_test = df_test.iloc[indexList]
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 # # Wordcloud
 def makeWorldCloud():
   depression_words = ''.join(list(df_test["text"].tolist()))
