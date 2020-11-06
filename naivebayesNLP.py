@@ -60,15 +60,6 @@ class NativeBayesNLP:
         return df
 
 
-    # def getTextFromFiles_Test(self, df_test, data_path, limit):
-    #     """Return Data Frame """
-    #
-    #     for file in os.listdir(data_path)[:limit]:
-    #         with open(data_path + "/" + file, 'r', encoding="ISO-8859-1") as file1:
-    #             file1 = file1.read()
-    #             df_test = df_test.append({'text': file1}, ignore_index=True)
-    #
-    #     return df_test
 
     def dataPreprocessingForX(self, df, columnName1):
         df[columnName1] = df[columnName1].map(lambda text: text.lower())
@@ -116,47 +107,7 @@ class NativeBayesNLP:
         # plt.xticks(x_pos, x)
 
         plt.show()
-    # def saveCountInCSV(self):
-    #     scva = count_vectorizer.get_feature_names()
-    #     scvb = tmp1.sum(axis=0)
 
-        #
-        # np.savetxt("csv1.csv",scva,delimiter=",", fmt="%s")
-        # np.savetxt("csv2.csv",scvb,delimiter=",")
-
-
-    # test_dataset에서 각 원문의 단어가 몇 번 나왔는지 확인 및 추출
-    # dump1 =np.array(counts)
-    # df_dump1 = pd.DataFrame(columns=['text', "count"])
-    # temp = dict()
-
-    # df_test = pd.DataFrame(columns=['text'])
-
-    # df_test = getTextFromFiles_Test(df_test, data_path_d_test,40)
-    # print(df_test.shape)
-    # dataPreprocessingForX(df_test, 'text')
-    # print(df_test.shape)
-
-
-
-
-    # counts = count_vectorizer.fit_transform(df['text'].tolist())
-
-
-    # print(count_vectorizer.get_feature_names())
-    # print(counts.toarray())
-    # tmp1 = counts.toarray()
-    # # print(tmp1.sum(axis=0))
-    # scva = count_vectorizer.get_feature_names()
-    # scvb = tmp1.sum(axis=0)
-    #
-    # np.savetxt("csv23.csv",scva,delimiter=",", fmt="%s")
-    # np.savetxt("csv24.csv",scvb,delimiter=",")
-
-    # dump1 = count_vectorizer.get_feature_names()
-    # dump2 = counts.toarray()
-
-    # print(counts)
     def fitandPredict(self, X_train, Y_train, X_test, ngram_range=(1, 3), min_df=50):
 
         count_vectorizer = CountVectorizer(ngram_range = ngram_range, min_df = min_df)
