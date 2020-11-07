@@ -16,8 +16,11 @@
 
 * NLP_Project_k_mean_version2
 
-  Include: Kmean, Elbow chart, World Clould⋅⋅ 
+  Include: Kmean, Elbow chart, Word Clould⋅⋅ 
   
 * naivebayesNLP
   
-  Include: naivebayes, World Clould⋅⋅ 
+  Include: naivebayes, Word Clould⋅⋅ 
+  
+* nlp
+  -beginning file
