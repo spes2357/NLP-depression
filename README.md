@@ -1,5 +1,8 @@
 # Version Explained(Latest First)
+* Hybrid_NLP_Project_version1
 
+  Include: kmean+ LSTM
+  
 * LSTM_NLP_Project_version3_with_K-fold_Cross_Validation
 
   Include: BiLSTM, 2BiLSTM, CNN+LSTM with custom text preprocessing
