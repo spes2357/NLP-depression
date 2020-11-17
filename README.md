@@ -1,17 +1,9 @@
-# Version Explained
+# Version Explained(Latest First)
 
-* LSTM_NLP_Project version1
-
-  Include: LSTM and data preprosssing function⋅⋅ 
   
-* LSTM_NLP_Project version4
 
-  Include: LSTM and custom text preprosssing function⋅⋅
   
-* LSTM_NLP_Project version5
 
-  Include: bidriectional LSTM models⋅⋅  
-  Not Include: custom text preprosssing function⋅⋅
 * LSTM_NLP_Project_version2_with_K-fold_Cross_Validation
 
   Include: LSTM, K-fold_Cross_Validation, buildin text preprosssing function⋅⋅  
@@ -25,6 +17,19 @@
 * NLP_Project_k_mean_version2
 
   Include: Kmean, Elbow chart, Word Clould⋅⋅ 
+  
+* LSTM_NLP_Project version5
+
+  Include: bidriectional LSTM models⋅⋅  
+  Not Include: custom text preprosssing function⋅⋅
+  
+* LSTM_NLP_Project version4
+
+  Include: LSTM and custom text preprosssing function⋅⋅
+
+* LSTM_NLP_Project version1
+
+  Include: LSTM and data preprosssing function⋅⋅ 
   
 * naivebayesNLP
   
