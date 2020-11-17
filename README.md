@@ -1,9 +1,10 @@
 # Version Explained(Latest First)
 
-  
+* LSTM_NLP_Project_version3_with_K-fold_Cross_Validation
 
-  
+  Include: BiLSTM, 2BiLSTM, CNN+LSTM with custom text preprocessing
 
+ 
 * LSTM_NLP_Project_version2_with_K-fold_Cross_Validation
 
   Include: LSTM, K-fold_Cross_Validation, buildin text preprosssing function⋅⋅  
