@@ -32,3 +32,6 @@
   
 * nlp
   -beginning file
+ 
+* test,stage2
+  -extracting data from redddit.
