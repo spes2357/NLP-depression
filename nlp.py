@@ -157,21 +157,16 @@ targets = df['depression'].values
 classifier.fit(counts, targets)
 
 
-
-
 example_counts = count_vectorizer.transform(df_test['text'].tolist())
 predictions = classifier.predict(example_counts)
 
 print(predictions)
-
-
 
 tfidf_vectorizer = TfidfTransformer().fit(counts)
 tfidf = tfidf_vectorizer.transform(counts)
 classifier = MultinomialNB()
 targets = df['depression'].values
 classifier.fit(counts, targets)
-
 
 example_counts = count_vectorizer.transform(df_test['text'].tolist())
 example_tfidf = tfidf_vectorizer.transform(example_counts)
@@ -182,26 +177,9 @@ indexList = []
 for idx, i in enumerate(predictions_tfidf):
     if i == 1:
         indexList.append(idx)
-
 print(type(df_test.iloc[indexList]))
 
-
 df_test = df_test.iloc[indexList]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # # Wordcloud
 def makeWorldCloud():
